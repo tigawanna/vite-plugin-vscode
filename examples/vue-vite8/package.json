@@ -1,7 +1,7 @@
 {
   "publisher": "tomjs-test",
-  "name": "vue-esm",
-  "type": "module",
+  "name": "vue-vite8",
+  "type": "commonjs",
   "version": "0.0.0",
   "private": true,
   "description": "vite + vue",
@@ -25,6 +25,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tomjs/vscode": "^2.5.0",
     "@tomjs/vscode-webview": "^2.0.2",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "vue": "^3.5.26"
@@ -34,7 +35,7 @@
     "@types/vscode": "^1.75.0",
     "@types/vscode-webview": "^1.57.5",
     "@vitejs/plugin-vue": "^6.0.3",
-    "vite": "7.3.0",
+    "vite": "^8.0.0-beta.5",
     "vue-tsc": "^3.2.1"
   }
 }

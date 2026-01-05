@@ -8,15 +8,15 @@ import { readFileSync, readJsonSync } from '@tomjs/node';
 import { execa } from 'execa';
 import merge from 'lodash.merge';
 import { parse as htmlParser } from 'node-html-parser';
+import colors from 'picocolors';
 import { build as tsdownBuild } from 'tsdown';
 import { ORG_NAME, RESOLVED_VIRTUAL_MODULE_ID, VIRTUAL_MODULE_ID } from './constants';
-import { createLogger } from './logger';
+import { logger } from './logger';
 import { resolveServerUrl } from './utils';
 
 export * from './types';
 
 const isDev = process.env.NODE_ENV === 'development';
-const logger = createLogger();
 
 function getPkg() {
   const pkgFile = path.resolve(process.cwd(), 'package.json');
@@ -169,7 +169,7 @@ export default getWebviewHtml;
 export function useVSCodePlugin(options?: PluginOptions): PluginOption {
   const opts = preMergeOptions(options);
 
-  const handleConfig = (config: UserConfig): UserConfig => {
+  const handleConfig = (config: UserConfig, isRolldown: boolean): UserConfig => {
     let outDir = config?.build?.outDir || 'dist';
     opts.extension ??= {};
     if (opts.recommended) {
@@ -179,27 +179,31 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
 
     // assets
     const assetsDir = config?.build?.assetsDir || 'assets';
-    const output = {
+    const outputDefault = {
       chunkFileNames: `${assetsDir}/[name].js`,
       entryFileNames: `${assetsDir}/[name].js`,
       assetFileNames: `${assetsDir}/[name].[ext]`,
     };
 
-    let rollupOutput = config?.build?.rollupOptions?.output ?? {};
-    if (Array.isArray(rollupOutput)) {
-      rollupOutput.map(s => Object.assign(s, output));
+    const outputOptions: Record<string, any> = {};
+    const buildConfig = config.build || {};
+
+    // Compatible with rolldown
+    const optKey = isRolldown ? 'rolldownOptions' : (['rolldownOptions', 'rollupOptions'].find(s => buildConfig[s]) || 'rollupOptions');
+    let output = buildConfig[optKey]?.output || {};
+    if (Array.isArray(output)) {
+      output.map(s => Object.assign(s, outputDefault));
     }
     else {
-      rollupOutput = Object.assign({}, rollupOutput, output);
+      output = Object.assign({}, output, outputDefault);
     }
+    outputOptions[optKey] = Object.assign(outputOptions[optKey] || {}, { output }); ;
 
     return {
       build: {
         outDir,
         sourcemap: isDev ? true : config?.build?.sourcemap,
-        rollupOptions: {
-          output: rollupOutput,
-        },
+        ...outputOptions,
       },
     };
   };
@@ -218,7 +222,7 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
       name: '@tomjs:vscode',
       apply: 'serve',
       config(config) {
-        return handleConfig(config);
+        return handleConfig(config, this && 'rolldownVersion' in this.meta);
       },
       configResolved(config) {
         resolvedConfig = config;
@@ -232,6 +236,7 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
         if (!server || !server.httpServer) {
           return;
         }
+
         server.httpServer?.once('listening', async () => {
           const env = {
             NODE_ENV: server.config.mode || 'development',
@@ -240,11 +245,11 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
 
           logger.info('extension build start');
 
-          let buildCount = 0;
-
           const webview = opts?.webview as WebviewOption;
 
           const { onSuccess: _onSuccess, ignoreWatch, logLevel, watchFiles, ...tsdownOptions } = opts.extension || {};
+          const entryDir = path.dirname(tsdownOptions.entry);
+
           await tsdownBuild(
             merge(tsdownOptions, {
               watch: watchFiles ?? (opts.recommended ? ['extension'] : true),
@@ -265,6 +270,19 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
                         if (id === RESOLVED_VIRTUAL_MODULE_ID)
                           return devWebviewVirtualCode;
                       },
+                      watchChange(id, e) {
+                        let event = '';
+                        if (e.event === 'update') {
+                          event = colors.green(e.event);
+                        }
+                        else if (e.event === 'delete') {
+                          event = colors.red(e.event);
+                        }
+                        else {
+                          event = colors.blue(e.event);
+                        }
+                        logger.info(`${event} ${colors.dim(path.relative(entryDir, id))}`);
+                      },
                     },
                   ],
               async onSuccess(config, signal) {
@@ -277,13 +295,9 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
                   }
                 }
 
-                if (buildCount++ > 1) {
-                  logger.info('extension rebuild success');
-                }
-                else {
-                  logger.info('extension build success');
-                }
+                logger.info('extension build success');
               },
+              buildOptions: {},
             } as TsdownOptions),
           );
         });
@@ -323,7 +337,7 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
       apply: 'build',
       enforce: 'post',
       config(config) {
-        return handleConfig(config);
+        return handleConfig(config, this && 'rolldownVersion' in this.meta);
       },
       configResolved(config) {
         resolvedConfig = config;

@@ -406,7 +406,7 @@ const value = await acquireVsCodeApi().getState();
         "background": {
           "activeOnStart": true,
           "beginsPattern": "^.*extension build start*$",
-          "endsPattern": "^.*extension (build|rebuild) success.*$"
+          "endsPattern": "^.*extension build success.*$"
         }
       },
       "isBackground": true,
@@ -450,6 +450,7 @@ pnpm build
 - [vue](./examples/vue)：简单的 vue 示例。
 - [vue-esm](./examples/vue-esm)：简单的 vue（ESM 扩展）示例。
 - [vue-import](./examples/vue-import)：动态 import() 和多页面示例。
+- [vue-vite8](./examples/vue-rolldown): [vite8](https://cn.vite.dev/) 示例。
 
 ## 关联
 

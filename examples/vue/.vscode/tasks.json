@@ -20,7 +20,7 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": "^.*extension build start*$",
-          "endsPattern": "^.*extension (build|rebuild) success.*$"
+          "endsPattern": "^.*extension build success.*$"
         }
       },
       "isBackground": true,

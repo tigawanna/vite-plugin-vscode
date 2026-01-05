@@ -406,7 +406,7 @@ Run `Debug Extension` through `vscode` to debug. For debugging tools, refer to [
         "background": {
           "activeOnStart": true,
           "beginsPattern": "^.*extension build start*$",
-          "endsPattern": "^.*extension (build|rebuild) success.*$"
+          "endsPattern": "^.*extension build success.*$"
         }
       },
       "isBackground": true,
@@ -446,6 +446,7 @@ Open the [examples](./examples) directory, there are `vue` and `react` examples.
 - [vue](./examples/vue): Simple vue example.
 - [vue-esm](./examples/vue-esm): Simple vue (ESM Extension) example.
 - [vue-import](./examples/vue-import): Dynamic import() and multi-page examples.
+- [vue-vite8](./examples/vue-rolldown): [vite8](https://vite.dev/) example.
 
 ## Related
 

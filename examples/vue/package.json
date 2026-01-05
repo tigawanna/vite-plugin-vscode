@@ -28,11 +28,14 @@
     "@tomjs/vscode": "^2.5.0",
     "@tomjs/vscode-webview": "^2.0.2",
     "@vscode/webview-ui-toolkit": "^1.4.0",
-    "vue": "^3.5.25"
+    "vue": "^3.5.26"
   },
   "devDependencies": {
     "@tomjs/vite-plugin-vscode": "workspace:^",
     "@types/vscode": "^1.75.0",
-    "@types/vscode-webview": "^1.57.5"
+    "@types/vscode-webview": "^1.57.5",
+    "@vitejs/plugin-vue": "^6.0.3",
+    "vite": "^6.4.1",
+    "vue-tsc": "^3.2.1"
   }
 }

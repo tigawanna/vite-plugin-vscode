@@ -61,23 +61,22 @@
     "vite": ">=2"
   },
   "dependencies": {
-    "@tomjs/logger": "^1.4.0",
     "@tomjs/node": "^2.2.3",
     "execa": "^9.6.1",
     "lodash.merge": "^4.6.2",
     "node-html-parser": "^7.0.1",
+    "picocolors": "^1.1.1",
     "tsdown": "~0.18.4"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.7.3",
-    "@commitlint/cli": "^20.2.0",
+    "@commitlint/cli": "^20.3.0",
     "@tomjs/commitlint": "^5.0.0",
-    "@tomjs/eslint": "^6.3.0",
+    "@tomjs/eslint": "^6.4.0",
     "@tomjs/stylelint": "^7.0.0",
-    "@tomjs/tsconfig": "^3.0.1",
+    "@tomjs/tsconfig": "^3.1.0",
     "@types/lodash.merge": "^4.6.9",
     "@types/node": "^20.19.27",
-    "@vitejs/plugin-vue": "^6.0.3",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
     "globals": "^16.5.0",
@@ -89,7 +88,6 @@
     "stylelint": "^16.26.1",
     "tsx": "^4.21.0",
     "typescript": "~5.9.3",
-    "vite": "^7.3.0",
-    "vue-tsc": "^3.2.1"
+    "vite": "^7.3.0"
   }
 }

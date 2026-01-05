@@ -44,7 +44,7 @@ vscodeApi.on('hello3', (data: any) => {
 
 <template>
   <main>
-    <h1>Hello Vue!!!!!</h1>
+    <h1>Hello Vue!</h1>
     <vscode-button @click="onPostMessage">
       Post Message
     </vscode-button>
