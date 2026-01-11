@@ -1,3 +1,10 @@
+## [7.0.0](https://github.com/tomjs/vite-plugin-vscode/compare/v6.2.0...v7.0.0) (2026-01-11)
+
+- docs: change readme  [55fe07f](https://github.com/tomjs/vite-plugin-vscode/commit/55fe07f)
+- feat: change devtools default value to false  [b1f9aee](https://github.com/tomjs/vite-plugin-vscode/commit/b1f9aee)
+- feat: disable vue template devtools  [69a8c08](https://github.com/tomjs/vite-plugin-vscode/commit/69a8c08)
+- feat: devtools support custom port  [cf51169](https://github.com/tomjs/vite-plugin-vscode/commit/cf51169)
+
 ## [6.2.0](https://github.com/tomjs/vite-plugin-vscode/compare/v6.1.0...v6.2.0) (2026-01-11)
 
 - feat: extension build success log is displayed only once  [3caf8a4](https://github.com/tomjs/vite-plugin-vscode/commit/3caf8a4)
