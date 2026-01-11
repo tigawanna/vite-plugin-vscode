@@ -285,12 +285,12 @@ const value = await acquireVsCodeApi().getState();
 
 ### PluginOptions
 
-| 参数名      | 类型                                         | 默认值  | 说明                                                                                                                                                                                                                                                                                                                                                                                  |
-| ----------- | -------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| recommended | `boolean`                                    | `true`  | 这个选项是为了提供推荐的默认参数和行为                                                                                                                                                                                                                                                                                                                                                |
-| extension   | [ExtensionOptions](#ExtensionOptions)        |         | vscode extension 可选配置                                                                                                                                                                                                                                                                                                                                                             |
-| webview     | `boolean` \| [WebviewOption](#WebviewOption) | `true`  | 注入 html 代码                                                                                                                                                                                                                                                                                                                                                                        |
-| devtools    | `boolean` \| `number`                        | `false` | 如果为 `true`，根据 `react` 插件是否存在，注入 `<script src="http://localhost:8097"></script>` 代码用于 [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools); 根据 `vue` 插件是否存在，注入 `<script src="http://localhost:8097"></script>` 用于 [vue-devtools](https://devtools.vuejs.org/guide/standalone) 调试，如果为 `number`，则为自定义端口。 |
+| 参数名      | 类型                                         | 默认值  | 说明                                                                                                                                                                                         |
+| ----------- | -------------------------------------------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| recommended | `boolean`                                    | `true`  | 这个选项是为了提供推荐的默认参数和行为                                                                                                                                                       |
+| extension   | [ExtensionOptions](#ExtensionOptions)        |         | vscode extension 可选配置                                                                                                                                                                    |
+| webview     | `boolean` \| [WebviewOption](#WebviewOption) | `true`  | 注入 html 代码                                                                                                                                                                               |
+| devtools    | `boolean` \| `number`                        | `false` | 注入 script 代码用于 [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools) 或 [vue-devtools](https://devtools.vuejs.org/guide/standalone) 调试，可自定义端口 |
 
 #### Notice
 
@@ -459,6 +459,10 @@ pnpm build
 - [@tomjs/vscode-webview](https://npmjs.com/package/@tomjs/vscode-webview): 优化 `webview` 页面与 [vscode 扩展](https://marketplace.visualstudio.com/VSCode) 的 `postMessage` 问题
 
 ## 重要说明
+
+### v7.0.0
+
+参数 `devtools` 默认值改为 `false`
 
 ### v6.0.0
 

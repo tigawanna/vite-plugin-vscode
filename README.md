@@ -286,12 +286,12 @@ const value = await acquireVsCodeApi().getState();
 
 ### PluginOptions
 
-| Property    | Type                                         | Default | Description                                                                                                                                                                                                                                                                                                                                                                                                                         |
-| ----------- | -------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| recommended | `boolean`                                    | `true`  | This option is intended to provide recommended default parameters and behavior.                                                                                                                                                                                                                                                                                                                                                     |
-| extension   | [ExtensionOptions](#ExtensionOptions)        |         | Configuration options for the vscode extension.                                                                                                                                                                                                                                                                                                                                                                                     |
-| webview     | `boolean` \| [WebviewOption](#WebviewOption) | `true`  | Inject html code                                                                                                                                                                                                                                                                                                                                                                                                                    |
-| devtools    | `boolean` \| `number`                        | `true`  | If `true`, depending on whether the `react` plugin exists, inject `<script src="http://localhost:8097"></script>` code for [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools); depending on whether the `vue` plugin exists, inject `<script src="http://localhost:8097"></script>` for [vue-devtools](https://devtools.vuejs.org/guide/standalone) debugging; if `number`, it is a custom port. |
+| Property    | Type                                         | Default | Description                                                                                                                                                                                                                       |
+| ----------- | -------------------------------------------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| recommended | `boolean`                                    | `true`  | This option is intended to provide recommended default parameters and behavior.                                                                                                                                                   |
+| extension   | [ExtensionOptions](#ExtensionOptions)        |         | Configuration options for the vscode extension.                                                                                                                                                                                   |
+| webview     | `boolean` \| [WebviewOption](#WebviewOption) | `true`  | Inject html code                                                                                                                                                                                                                  |
+| devtools    | `boolean` \| `number`                        | `false` | Inject script code is used for debugging in [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools) or [vue-devtools](https://devtools.vuejs.org/guide/standalone), and the port can be customized. |
 
 #### Notice
 
@@ -455,6 +455,10 @@ Open the [examples](./examples) directory, there are `vue` and `react` examples.
 - [@tomjs/vscode-webview](https://npmjs.com/package/@tomjs/vscode-webview): Optimize the `postMessage` issue between `webview` page and [vscode extensions](https://marketplace.visualstudio.com/VSCode)
 
 ## Important Notes
+
+### v7.0.0
+
+Change the default value of the parameter `devtools` to `false`.
 
 ### v6.0.0
 
