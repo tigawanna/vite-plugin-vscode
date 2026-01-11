@@ -1,3 +1,9 @@
+## [6.2.0](https://github.com/tomjs/vite-plugin-vscode/compare/v6.1.0...v6.2.0) (2026-01-11)
+
+- feat: extension build success log is displayed only once  [3caf8a4](https://github.com/tomjs/vite-plugin-vscode/commit/3caf8a4)
+- chore: update deps  [832aa32](https://github.com/tomjs/vite-plugin-vscode/commit/832aa32)
+- feat: support rolldown  [3ab5e69](https://github.com/tomjs/vite-plugin-vscode/commit/3ab5e69)
+
 ## [6.1.0](https://github.com/tomjs/vite-plugin-vscode/compare/v6.0.2...v6.1.0) (2026-01-03)
 
 - feat: change env to types  [e373842](https://github.com/tomjs/vite-plugin-vscode/commit/e373842)
