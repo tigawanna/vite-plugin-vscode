@@ -312,26 +312,28 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
           return html;
         }
 
-        const devtools = opts.devtools ?? true;
-        let port: number | undefined;
-        if (typeof devtools === 'number') {
-          port = devtools;
-        }
-        else if (devtools === true) {
-          if (resolvedConfig.plugins.find(s => ['vite:vue', 'vite:vue2'].includes(s.name))) {
-            port = 8098;
+        const devtools = opts.devtools;
+        if (devtools) {
+          let port: number | undefined;
+          if (typeof devtools === 'number') {
+            port = devtools;
           }
-          else if (resolvedConfig.plugins.find(s => ['vite:react-refresh', 'vite:react-swc'].includes(s.name))) {
-            port = 8097;
+          else if (devtools === true) {
+            if (resolvedConfig.plugins.find(s => ['vite:vue', 'vite:vue2'].includes(s.name))) {
+              port = 8098;
+            }
+            else if (resolvedConfig.plugins.find(s => ['vite:react-refresh', 'vite:react-swc'].includes(s.name))) {
+              port = 8097;
+            }
           }
-        }
 
-        if (port) {
-          html = html.replace(/<head>/i, `<head><script src="http://localhost:${port}"></script>`);
-        }
-        else if (devtools && !devtoolsFlag) {
-          devtoolsFlag = true;
-          logger.warn('Only support react-devtools and vue-devtools!');
+          if (port) {
+            html = html.replace(/<head>/i, `<head><script src="http://localhost:${port}"></script>`);
+          }
+          else if (!devtoolsFlag) {
+            devtoolsFlag = true;
+            logger.warn('Only support react-devtools and vue-devtools!');
+          }
         }
 
         return html.replace(/<head>/i, `<head><script>${devWebviewClientCode}</script>`);
