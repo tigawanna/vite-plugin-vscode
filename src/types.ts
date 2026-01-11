@@ -73,7 +73,8 @@ export interface PluginOptions {
    *  - true:
    *    - react: inject `<script src="http://localhost:8097"></script>`
    *    - vue: inject `<script src="http://localhost:8098"></script>`
+   *  - `number`: custom port
    * @default true
    */
-  devtools?: boolean;
+  devtools?: boolean | number;
 }
