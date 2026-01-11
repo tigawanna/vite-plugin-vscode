@@ -19,6 +19,7 @@ export default defineConfig({
       webview: {
         // csp: '<meta http-equiv="Content-Security-Policy" />',
       },
+      devtools: false,
     }),
   ],
 });
