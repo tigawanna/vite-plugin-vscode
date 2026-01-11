@@ -250,6 +250,8 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
           const { onSuccess: _onSuccess, ignoreWatch, logLevel, watchFiles, ...tsdownOptions } = opts.extension || {};
           const entryDir = path.dirname(tsdownOptions.entry);
 
+          let buildFlag = false;
+
           await tsdownBuild(
             merge(tsdownOptions, {
               watch: watchFiles ?? (opts.recommended ? ['extension'] : true),
@@ -295,7 +297,10 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
                   }
                 }
 
-                logger.info('extension build success');
+                if (!buildFlag) {
+                  buildFlag = true;
+                  logger.info('extension build success');
+                }
               },
               buildOptions: {},
             } as TsdownOptions),
