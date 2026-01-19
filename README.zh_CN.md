@@ -433,7 +433,8 @@ const value = await acquireVsCodeApi().getState();
 
 ### 网页调试
 
-可以使用 [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools) 和 [vue-devtools](https://devtools.vuejs.org/guide/standalone) 的独立应用调试 `webview`
+- 可以使用 [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools) 和 [vue-devtools](https://devtools.vuejs.org/guide/standalone) 的独立应用调试 `webview`
+- `vue` 项目可以使用 [vite-plugin-vue-devtools](https://devtools.vuejs.org/guide/vite-plugin) 这个 `vite` 插件
 
 ## 示例
 

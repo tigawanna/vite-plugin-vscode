@@ -177,27 +177,31 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
       outDir = path.resolve(outDir, 'webview');
     }
 
-    // assets
-    const assetsDir = config?.build?.assetsDir || 'assets';
-    const outputDefault = {
-      chunkFileNames: `${assetsDir}/[name].js`,
-      entryFileNames: `${assetsDir}/[name].js`,
-      assetFileNames: `${assetsDir}/[name].[ext]`,
-    };
-
     const outputOptions: Record<string, any> = {};
     const buildConfig = config.build || {};
 
     // Compatible with rolldown
     const optKey = isRolldown ? 'rolldownOptions' : (['rolldownOptions', 'rollupOptions'].find(s => buildConfig[s]) || 'rollupOptions');
+
+    const outputDefault: Record<string, any> = {};
+    const inputs = buildConfig[optKey]?.input;
+    if (Array.isArray(inputs) && inputs.length === 1) {
+      if (isRolldown) {
+        outputDefault.codeSplitting = false;
+      }
+      else {
+        outputDefault.inlineDynamicImports = true;
+      }
+    }
     let output = buildConfig[optKey]?.output || {};
     if (Array.isArray(output)) {
-      output.map(s => Object.assign(s, outputDefault));
+      output.map(s => Object.assign({}, outputDefault, s));
     }
     else {
-      output = Object.assign({}, output, outputDefault);
+      output = Object.assign({}, outputDefault, output);
     }
-    outputOptions[optKey] = Object.assign(outputOptions[optKey] || {}, { output }); ;
+
+    outputOptions[optKey] = Object.assign(outputOptions[optKey] || {}, isRolldown ? {} : {}, { output });
 
     return {
       build: {

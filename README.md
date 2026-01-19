@@ -431,6 +431,11 @@ Run `Debug Extension` through `vscode` to debug. For debugging tools, refer to [
 }
 ```
 
+### Webpage Debugging
+
+- You can use the standalone applications of [react-devtools](https://github.com/facebook/react/tree/main/packages/react-devtools) and [vue-devtools](https://devtools.vuejs.org/guide/standalone) to debug `webview`.
+- For Vue projects, you can use the [vite-plugin-vue-devtools](https://devtools.vuejs.org/guide/vite-plugin) Vite plugin.
+
 ## Examples
 
 First execute the following command to install dependencies and generate library files:
