@@ -311,11 +311,11 @@ During development, support standalone development tool applications for `react`
 
 Based on [Options](https://tsdown.dev/reference/api/Interface.Options) of [tsdown](https://tsdown.dev/), some default values are added for ease of use.
 
-| Property   | Type                 | Default               | Description                                        |
-| ---------- | -------------------- | --------------------- | -------------------------------------------------- |
-| entry      | `string`             | `extension/index.ts`  | The vscode extension entry file.                   |
-| outDir     | `string`             | `dist-extension/main` | The output directory for the vscode extension file |
-| watchFiles | `string`\/`string[]` | ``                    | Watch extension code files during development      |
+| Property   | Type                 | Default                   | Description                                        |
+| ---------- | -------------------- | ------------------------- | -------------------------------------------------- |
+| entry      | `string`             | `extension/index.ts`      | The vscode extension entry file.                   |
+| outDir     | `string`             | `dist/extension/index.js` | The output directory for the vscode extension file |
+| watchFiles | `string`\/`string[]` | ``                        | Watch extension code files during development      |
 
 ### WebviewOption
 

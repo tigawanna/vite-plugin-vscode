@@ -311,11 +311,11 @@ const value = await acquireVsCodeApi().getState();
 
 继承自 [tsdown](https://tsdown.dev/zh-CN/) 的 [Options](https://tsdown.dev/zh-CN/reference/api/Interface.Options)，添加了一些默认值，方便使用。
 
-| 参数名     | 类型                 | 默认值                | 说明                     |
-| ---------- | -------------------- | --------------------- | ------------------------ |
-| entry      | `string`             | `extension/index.ts`  | 入口文件                 |
-| outDir     | `string`             | `dist-extension/main` | 输出文件夹               |
-| watchFiles | `string`\/`string[]` | ``                    | 开发时监听扩展代码的文件 |
+| 参数名     | 类型                 | 默认值                    | 说明                     |
+| ---------- | -------------------- | ------------------------- | ------------------------ |
+| entry      | `string`             | `extension/index.ts`      | 入口文件                 |
+| outDir     | `string`             | `dist/extension/index.js` | 输出文件夹               |
+| watchFiles | `string`\/`string[]` | ``                        | 开发时监听扩展代码的文件 |
 
 ### WebviewOption
 
