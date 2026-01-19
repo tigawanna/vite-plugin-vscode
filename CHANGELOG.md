@@ -1,3 +1,7 @@
+## [7.1.0](https://github.com/tomjs/vite-plugin-vscode/compare/v7.0.0...v7.1.0) (2026-01-19)
+
+- feat: use codeSplitting for rolldownOptions #35  [c28d31f](https://github.com/tomjs/vite-plugin-vscode/commit/c28d31f)
+
 ## [7.0.0](https://github.com/tomjs/vite-plugin-vscode/compare/v6.2.0...v7.0.0) (2026-01-11)
 
 - docs: change readme  [55fe07f](https://github.com/tomjs/vite-plugin-vscode/commit/55fe07f)
