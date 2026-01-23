@@ -1,3 +1,8 @@
+## [7.1.1](https://github.com/tomjs/vite-plugin-vscode/compare/v7.1.0...v7.1.1) (2026-01-23)
+
+- fix: inputs logic  [ca48a08](https://github.com/tomjs/vite-plugin-vscode/commit/ca48a08)
+- fix: readme  [8d99164](https://github.com/tomjs/vite-plugin-vscode/commit/8d99164)
+
 ## [7.1.0](https://github.com/tomjs/vite-plugin-vscode/compare/v7.0.0...v7.1.0) (2026-01-19)
 
 - feat: use codeSplitting for rolldownOptions #35  [c28d31f](https://github.com/tomjs/vite-plugin-vscode/commit/c28d31f)
