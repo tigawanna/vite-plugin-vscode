@@ -185,7 +185,7 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
 
     const outputDefault: Record<string, any> = {};
     const inputs = buildConfig[optKey]?.input;
-    if (Array.isArray(inputs) && inputs.length === 1) {
+    if ((Array.isArray(inputs) && inputs.length === 1) || !inputs || typeof inputs === 'string') {
       if (isRolldown) {
         outputDefault.codeSplitting = false;
       }
@@ -201,7 +201,7 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
       output = Object.assign({}, outputDefault, output);
     }
 
-    outputOptions[optKey] = Object.assign(outputOptions[optKey] || {}, isRolldown ? {} : {}, { output });
+    outputOptions[optKey] = Object.assign(outputOptions[optKey] || {}, { output });
 
     return {
       build: {
