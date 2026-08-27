@@ -1,15 +1,13 @@
-import type { InlineConfig as TsdownOptions } from 'tsdown';
-import type { PluginOption, ResolvedConfig, UserConfig } from 'vite';
+import type { Plugin, PluginOption, ResolvedConfig, UserConfig } from 'vite';
 import type { ExtensionOptions, PluginOptions, WebviewOption } from './types';
 import fs from 'node:fs';
 import path from 'node:path';
 import { cwd } from 'node:process';
 import { readFileSync, readJsonSync } from '@tomjs/node';
-import { execa } from 'execa';
 import merge from 'lodash.merge';
 import { parse as htmlParser } from 'node-html-parser';
 import colors from 'picocolors';
-import { build as tsdownBuild } from 'tsdown';
+import { runExtensionBuild, runExtensionServe } from './build';
 import { ORG_NAME, RESOLVED_VIRTUAL_MODULE_ID, VIRTUAL_MODULE_ID } from './constants';
 import { logger } from './logger';
 import { resolveServerUrl } from './utils';
@@ -45,14 +43,8 @@ function preMergeOptions(options?: PluginOptions): PluginOptions {
         outDir: 'dist-extension',
         target: format === 'esm' ? ['node20'] : ['es2019', 'node14'],
         format,
-        shims: true,
         clean: true,
-        dts: false,
         treeshake: !isDev,
-        publint: false,
-        // ignore tsdown.config.ts from project
-        config: false,
-        fixedExtension: false,
         external: ['vscode'],
       } as ExtensionOptions,
     } as PluginOptions,
@@ -82,15 +74,35 @@ function preMergeOptions(options?: PluginOptions): PluginOptions {
     };
   }
 
-  if (!isDev && !opt.skipNodeModulesBundle && !opt.noExternal) {
-    opt.noExternal = Object.keys(pkg.dependencies || {}).concat(
-      Object.keys(pkg.peerDependencies || {}),
-    );
-  }
-
   opts.extension = opt;
 
   return opts;
+}
+
+/**
+ * Create the plugin that injects the generated webview code through the
+ * `virtual:vscode` module, used while compiling the consumer's extension.
+ */
+function createInjectPlugin(
+  code: string,
+  watchChange?: (id: string, event: { event: 'create' | 'update' | 'delete' }) => void,
+): Plugin {
+  return {
+    name: `${ORG_NAME}:vscode:inject`,
+    resolveId(id) {
+      if (id === VIRTUAL_MODULE_ID) {
+        return RESOLVED_VIRTUAL_MODULE_ID;
+      }
+    },
+    load(id) {
+      if (id === RESOLVED_VIRTUAL_MODULE_ID) {
+        return code;
+      }
+    },
+    watchChange(id, event) {
+      watchChange?.(id, event);
+    },
+  };
 }
 
 function genProdWebviewCode(cache: Record<string, string>, webview?: WebviewOption) {
@@ -247,68 +259,32 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
             VITE_DEV_SERVER_URL: resolveServerUrl(server),
           };
 
-          logger.info('extension build start');
-
           const webview = opts?.webview as WebviewOption;
 
-          const { onSuccess: _onSuccess, ignoreWatch, logLevel, watchFiles, ...tsdownOptions } = opts.extension || {};
-          const entryDir = path.dirname(tsdownOptions.entry);
+          if (opts.extension) {
+            opts.extension.env = env;
+          }
 
-          let buildFlag = false;
-
-          await tsdownBuild(
-            merge(tsdownOptions, {
-              watch: watchFiles ?? (opts.recommended ? ['extension'] : true),
-              ignoreWatch: (['.history', '.temp', '.tmp', '.cache', 'dist'] as (string | RegExp)[]).concat(Array.isArray(ignoreWatch) ? ignoreWatch : []),
-              env,
-              logLevel: logLevel ?? 'silent',
-              plugins: !webview
-                ? []
-                : [
-                    {
-                      name: `${ORG_NAME}:vscode:inject`,
-                      resolveId(id) {
-                        if (id === VIRTUAL_MODULE_ID) {
-                          return RESOLVED_VIRTUAL_MODULE_ID;
-                        }
-                      },
-                      load(id) {
-                        if (id === RESOLVED_VIRTUAL_MODULE_ID)
-                          return devWebviewVirtualCode;
-                      },
-                      watchChange(id, e) {
-                        let event = '';
-                        if (e.event === 'update') {
-                          event = colors.green(e.event);
-                        }
-                        else if (e.event === 'delete') {
-                          event = colors.red(e.event);
-                        }
-                        else {
-                          event = colors.blue(e.event);
-                        }
-                        logger.info(`${event} ${colors.dim(path.relative(entryDir, id))}`);
-                      },
-                    },
-                  ],
-              async onSuccess(config, signal) {
-                if (_onSuccess) {
-                  if (typeof _onSuccess === 'string') {
-                    await execa(_onSuccess);
+          const entryDir = path.dirname(opts.extension?.entry as string);
+          const plugins = !webview
+            ? []
+            : [
+                createInjectPlugin(devWebviewVirtualCode, (id, e) => {
+                  let event = '';
+                  if (e.event === 'update') {
+                    event = colors.green(e.event);
                   }
-                  else if (typeof _onSuccess === 'function') {
-                    await _onSuccess(config, signal);
+                  else if (e.event === 'delete') {
+                    event = colors.red(e.event);
                   }
-                }
+                  else {
+                    event = colors.blue(e.event);
+                  }
+                  logger.info(`${event} ${colors.dim(path.relative(entryDir, id))}`);
+                }),
+              ];
 
-                if (!buildFlag) {
-                  buildFlag = true;
-                  logger.info('extension build success');
-                }
-              },
-              buildOptions: {},
-            } as TsdownOptions),
-          );
+          await runExtensionServe(opts.extension!, plugins);
         });
       },
       transformIndexHtml(html) {
@@ -361,7 +337,7 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
         prodHtmlCache[ctx.chunk?.name as string] = html;
         return html;
       },
-      closeBundle() {
+      async closeBundle() {
         let webviewVirtualCode: string;
 
         const webview = opts?.webview as WebviewOption;
@@ -378,43 +354,15 @@ export function useVSCodePlugin(options?: PluginOptions): PluginOption {
           VITE_WEBVIEW_DIST: outDir,
         };
 
-        logger.info('extension build start');
+        if (opts.extension) {
+          opts.extension.env = env;
+        }
 
-        const { onSuccess: _onSuccess, logLevel, ...tsupOptions } = opts.extension || {};
+        const plugins = !webview
+          ? []
+          : [createInjectPlugin(webviewVirtualCode)];
 
-        tsdownBuild(
-          merge(tsupOptions, {
-            env,
-            logLevel: logLevel ?? 'silent',
-            plugins: !webview
-              ? []
-              : [
-                  {
-                    name: `${ORG_NAME}:vscode:inject`,
-                    resolveId(id) {
-                      if (id === VIRTUAL_MODULE_ID) {
-                        return RESOLVED_VIRTUAL_MODULE_ID;
-                      }
-                    },
-                    load(id) {
-                      if (id === RESOLVED_VIRTUAL_MODULE_ID)
-                        return webviewVirtualCode;
-                    },
-                  },
-                ],
-            async onSuccess(config, signal) {
-              if (_onSuccess) {
-                if (typeof _onSuccess === 'string') {
-                  await execa(_onSuccess);
-                }
-                else if (typeof _onSuccess === 'function') {
-                  await _onSuccess(config, signal);
-                }
-              }
-              logger.info('extension build success');
-            },
-          } as TsdownOptions),
-        );
+        await runExtensionBuild(opts.extension!, plugins);
       },
     },
   ];

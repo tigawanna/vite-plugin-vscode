@@ -1,29 +1,80 @@
-import type { InlineConfig } from 'tsdown';
+import type { UserConfig as ViteOptions } from 'vite';
+
+type Arrayable<T> = T | T[];
 
 /**
- * vscode extension options. See [tsdown](https://tsdown.dev/) and [Config Options](https://tsdown.dev/reference/config-options) for more information.
+ * vscode extension options. The extension code is now compiled with
+ * [vite](https://vite.dev/) itself (replacing the previous tsdown build), so this
+ * interface inherits every top-level [Vite UserConfig](https://vite.dev/config/) option.
+ *
+ * The following fields are managed by the plugin and therefore omitted from the
+ * inheritance: `configFile`, `base`, `root` and `build`.
  */
 export interface ExtensionOptions
-  extends Omit<
-    InlineConfig,
-    'entry' | 'format' | 'outDir' | 'watch'
-  > {
+  extends Omit<ViteOptions, 'configFile' | 'base' | 'root' | 'build'> {
   /**
    * The extension entry file.
    * @default "extension/index.ts"
    */
-  entry?: string;
+  entry?: string | string[] | Record<string, string>;
+  /**
+   * The bundle format. If not specified, it will use the `type` field from `package.json`.
+   */
+  format?: 'cjs' | 'esm';
   /**
    * The output directory for the extension files. Default is `dist-extension`.
    * @default "dist-extension"
    */
   outDir?: string;
   /**
-   * `tsdown` watches the current working directory by default. You can set files that need to be watched, which may improve performance.
-   *
-   * If no value is specified, the default value of the "recommended" parameter is ["extension"] when it is true, otherwise it defaults to "true"
+   * Don't bundle these modules. `vscode` and Node.js built-ins are always excluded.
+   */
+  external?: Arrayable<string | RegExp> | ((id: string, parentId?: string, isResolved?: boolean) => boolean | void);
+  /**
+   * Empty the output directory before building.
+   * @default true
+   */
+  clean?: boolean;
+  /**
+   * Enable/disable tree-shaking.
+   * @default true in production, false in development
+   */
+  treeshake?: boolean;
+  /**
+   * The build target, passed to Vite's `build.target`.
+   * @default 'node20' for esm, ['es2019', 'node14'] for cjs
+   */
+  target?: string | string[] | false;
+  /**
+   * Whether to generate sourcemaps.
+   * @default true in development, false in production
+   */
+  sourcemap?: boolean | 'inline' | 'hidden';
+  /**
+   * Minify the output. `true` is an alias for `'oxc'`.
+   * @default false in development, true in production
+   */
+  minify?: boolean | 'oxc' | 'terser' | 'esbuild';
+  /**
+   * Additional files or folders to watch (dev mode). With Vite the module
+   * dependency graph is always watched, so this is only needed for files
+   * outside the graph.
    */
   watchFiles?: string | string[];
+  /**
+   * Files or folders to ignore while watching.
+   * @default ['.history', '.temp', '.tmp', '.cache', 'dist']
+   */
+  ignoreWatch?: Arrayable<string | RegExp>;
+  /**
+   * A shell command or callback to run after every successful build.
+   */
+  onSuccess?: string | ((config?: unknown, signal?: unknown) => void | Promise<void>);
+  /**
+   * Environment variables inlined into the bundle via Vite's `define`.
+   * @internal
+   */
+  env?: Record<string, string>;
 }
 
 /**

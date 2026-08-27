@@ -10,7 +10,7 @@
 
 ## 特性
 
-- 使用 [tsdown](https://tsdown.dev/zh-CN/) 快速构建 `扩展代码`
+- 使用 [vite](https://cn.vitejs.dev/) 快速构建 `扩展代码`
 - 配置简单，专注业务
 - 支持 `esm`和 `cjs`
 - 支持 ESM 扩展（vscode `v1.100.0+`）
@@ -309,13 +309,24 @@ const value = await acquireVsCodeApi().getState();
 
 ### ExtensionOptions
 
-继承自 [tsdown](https://tsdown.dev/zh-CN/) 的 [Options](https://tsdown.dev/zh-CN/reference/api/Interface.Options)，添加了一些默认值，方便使用。
+继承自 [vite](https://cn.vitejs.dev/) 的 [UserConfig](https://cn.vitejs.dev/config/)，添加了一些默认值，方便使用。
 
-| 参数名     | 类型                 | 默认值                    | 说明                     |
-| ---------- | -------------------- | ------------------------- | ------------------------ |
-| entry      | `string`             | `extension/index.ts`      | 入口文件                 |
-| outDir     | `string`             | `dist/extension/index.js` | 输出文件夹               |
-| watchFiles | `string`\/`string[]` | ``                        | 开发时监听扩展代码的文件 |
+| 参数名      | 类型                                        | 默认值                                           | 说明                                                       |
+| ----------- | ------------------------------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| **entry**   | `string \| string[] \| Record`              | `extension/index.ts`                             | vscode 扩展入口文件                                        |
+| format      | `'cjs' \| 'esm'`                            | `-`                                              | 打包格式。如果未指定，将使用 package.json 中的 "type" 字段 |
+| outDir      | `string`                                    | `dist/extension`                                 | vscode 扩展输出文件夹                                      |
+| target      | `string \| string[] \| false`               | `'node20'`（esm）/ `['es2019', 'node14']`（cjs） | 构建目标，传递给 Vite 的 `build.target`                    |
+| sourcemap   | `boolean \| 'inline' \| 'hidden'`           | `true`（dev）/ `false`（prod）                   | 是否生成 sourcemap                                         |
+| minify      | `boolean \| 'oxc' \| 'terser' \| 'esbuild'` | `false`（dev）/ `true`（prod）                   | 压缩输出                                                   |
+| clean       | `boolean`                                   | `true`                                           | 构建前清空输出目录                                         |
+| treeshake   | `boolean`                                   | `true`（prod）/ `false`（dev）                   | 是否启用 tree-shaking                                      |
+| external    | `Arrayable<string \| RegExp> \| function`   | `['vscode']`                                     | 不打包这些模块。`vscode` 和 Node.js 内置模块始终会被排除   |
+| watchFiles  | `string \| string[]`                        | ``                                               | 开发时额外监听的文件夹或文件。Vite 始终会监听模块依赖图    |
+| ignoreWatch | `Arrayable<string \| RegExp>`               | `'.history', '.temp', '.tmp', '.cache', 'dist'`  | 忽略监听的文件或文件夹                                     |
+| onSuccess   | `string \| function`                        | ``                                               | 每次构建成功后执行的 shell 命令或回调                      |
+
+也可以直接传递 [Vite UserConfig](https://cn.vitejs.dev/config/) 的其他顶层选项（`resolve`、`define`、`plugins` 等）。
 
 ### WebviewOption
 
@@ -451,7 +462,6 @@ pnpm build
 - [vue](./examples/vue)：简单的 vue 示例。
 - [vue-esm](./examples/vue-esm)：简单的 vue（ESM 扩展）示例。
 - [vue-import](./examples/vue-import)：动态 import() 和多页面示例。
-- [vue-vite8](./examples/vue-rolldown): [vite8](https://cn.vite.dev/) 示例。
 
 ## 关联
 
@@ -460,6 +470,15 @@ pnpm build
 - [@tomjs/vscode-webview](https://npmjs.com/package/@tomjs/vscode-webview): 优化 `webview` 页面与 [vscode 扩展](https://marketplace.visualstudio.com/VSCode) 的 `postMessage` 问题
 
 ## 重要说明
+
+### 最新（Vite 8）
+
+**破坏性更新：**
+
+- 需要 **Vite `^8.0.0`**。消费者的 `extension` 代码现在由 Vite 自身（基于 Rolldown）编译，不再使用 `tsdown`。
+- `ExtensionOptions` 现在继承自 Vite 的 [UserConfig](https://cn.vitejs.dev/config/) 而非 tsdown 的选项。可以直接传递任意 Vite 顶层选项（`resolve`、`define`、`plugins` 等）。
+- dev 模式下始终监听扩展的模块依赖图；`watchFiles` 仅用于监听依赖图之外的文件。
+- `esm` 输出会自动注入 `__dirname` / `__filename`（等价于之前的 `shims` 行为）。
 
 ### v7.0.0
 

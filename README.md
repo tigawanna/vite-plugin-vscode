@@ -10,7 +10,7 @@ During development, inject code into both `vscode extension code` and `web page`
 
 ## Features
 
-- Use [tsdown](https://tsdown.dev/) to quickly build `extension code`
+- Use [vite](https://vite.dev/) to quickly build `extension code`
 - Simple configuration, focus on business
 - Support `esm` and `cjs`
 - Support ESM extension (vscode `v1.100.0+`)
@@ -309,13 +309,24 @@ During development, support standalone development tool applications for `react`
 
 ### ExtensionOptions
 
-Based on [Options](https://tsdown.dev/reference/api/Interface.Options) of [tsdown](https://tsdown.dev/), some default values are added for ease of use.
+Based on [UserConfig](https://vite.dev/config/) of [vite](https://vite.dev), some default values are added for ease of use.
 
-| Property   | Type                 | Default                   | Description                                        |
-| ---------- | -------------------- | ------------------------- | -------------------------------------------------- |
-| entry      | `string`             | `extension/index.ts`      | The vscode extension entry file.                   |
-| outDir     | `string`             | `dist/extension/index.js` | The output directory for the vscode extension file |
-| watchFiles | `string`\/`string[]` | ``                        | Watch extension code files during development      |
+| Property    | Type                                        | Default                                         | Description                                                                                               |
+| ----------- | ------------------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| entry       | `string \| string[] \| Record`              | `extension/index.ts`                            | The vscode extension entry file.                                                                          |
+| format      | `'cjs' \| 'esm'`                            | `-`                                             | The bundle format. If not specified, it will use the `type` field from `package.json`.                    |
+| outDir      | `string`                                    | `dist/extension`                                | The output directory for the vscode extension file.                                                       |
+| target      | `string \| string[] \| false`               | `'node20'` (esm) / `['es2019', 'node14']` (cjs) | The build target, passed to Vite's `build.target`.                                                        |
+| sourcemap   | `boolean \| 'inline' \| 'hidden'`           | `true` (dev) / `false` (prod)                   | Whether to generate sourcemaps.                                                                           |
+| minify      | `boolean \| 'oxc' \| 'terser' \| 'esbuild'` | `false` (dev) / `true` (prod)                   | Minify the output.                                                                                        |
+| clean       | `boolean`                                   | `true`                                          | Empty the output directory before building.                                                               |
+| treeshake   | `boolean`                                   | `true` (prod) / `false` (dev)                   | Enable/disable tree-shaking.                                                                              |
+| external    | `Arrayable<string \| RegExp> \| function`   | `['vscode']`                                    | Don't bundle these modules. `vscode` and Node.js built-ins are always excluded.                           |
+| watchFiles  | `string \| string[]`                        | ``                                              | Additional files or folders to watch during development. Vite always watches the module dependency graph. |
+| ignoreWatch | `Arrayable<string \| RegExp>`               | `'.history', '.temp', '.tmp', '.cache', 'dist'` | Ignore files or folders being watched.                                                                    |
+| onSuccess   | `string \| function`                        | ``                                              | A shell command or callback to run after every successful build.                                          |
+
+Any other top-level [Vite UserConfig](https://vite.dev/config/) option (`resolve`, `define`, `plugins`, ...) can also be passed directly.
 
 ### WebviewOption
 
@@ -451,7 +462,6 @@ Open the [examples](./examples) directory, there are `vue` and `react` examples.
 - [vue](./examples/vue): Simple vue example.
 - [vue-esm](./examples/vue-esm): Simple vue (ESM Extension) example.
 - [vue-import](./examples/vue-import): Dynamic import() and multi-page examples.
-- [vue-vite8](./examples/vue-rolldown): [vite8](https://vite.dev/) example.
 
 ## Related
 
@@ -460,6 +470,15 @@ Open the [examples](./examples) directory, there are `vue` and `react` examples.
 - [@tomjs/vscode-webview](https://npmjs.com/package/@tomjs/vscode-webview): Optimize the `postMessage` issue between `webview` page and [vscode extensions](https://marketplace.visualstudio.com/VSCode)
 
 ## Important Notes
+
+### Latest (Vite 8)
+
+**Breaking Updates:**
+
+- Requires **Vite `^8.0.0`**. The consumer's `extension` code is now compiled with Vite itself (Rolldown-based), instead of `tsdown`.
+- `ExtensionOptions` is now based on Vite's [UserConfig](https://vite.dev/config/) instead of tsdown's options. Any top-level Vite option (`resolve`, `define`, `plugins`, ...) can be passed directly.
+- The module dependency graph of the extension is always watched in dev mode; `watchFiles` is only needed for files outside the graph.
+- `__dirname` / `__filename` are injected automatically for `esm` output (like the previous `shims` behavior).
 
 ### v7.0.0
 
