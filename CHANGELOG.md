@@ -1,3 +1,8 @@
+## [8.0.0](https://github.com/tomjs/vite-plugin-vscode/compare/v7.1.1...v8.0.0) (2026-08-29)
+
+- chore: update deps  [fd606c4](https://github.com/tomjs/vite-plugin-vscode/commit/fd606c4)
+- feat: use vite replace tsdown  [319aa1d](https://github.com/tomjs/vite-plugin-vscode/commit/319aa1d)
+
 ## [7.1.1](https://github.com/tomjs/vite-plugin-vscode/compare/v7.1.0...v7.1.1) (2026-01-23)
 
 - fix: inputs logic  [ca48a08](https://github.com/tomjs/vite-plugin-vscode/commit/ca48a08)
