@@ -6,7 +6,9 @@ export default defineConfig((_options) => {
       entry: ['src/index.ts'],
       format: ['esm'],
       target: ['node18.19'],
-      external: ['vite'],
+      deps: {
+        neverBundle: ['vite'],
+      },
       shims: true,
       clean: false,
       dts: true,
